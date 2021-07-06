@@ -29,7 +29,7 @@ export const getStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps(context) {
+export const getStaticProps = async (context) => {
   const meetupId = context.params.meetupId;
 
   // console.log(meetupId);
@@ -46,6 +46,6 @@ export async function getStaticProps(context) {
       },
     },
   };
-}
+};
 
 export default MeetupDetails;

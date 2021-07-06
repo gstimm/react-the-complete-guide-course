@@ -1,34 +1,34 @@
-import MeetupList from '../components/meetups/MeetupList';
+import { MongoClient } from 'mongodb';
 
-const DUMMY_MEETUPS = [
-  {
-    id: 'm1',
-    title: 'First Meetup',
-    image:
-      'https://blog.lucasgilbert.com.br/wp-content/uploads/2018/03/city-e-town-lucas-gilbert.jpg',
-    address: 'Some address r5, 12345, New York',
-    description: 'This is a first meetup',
-  },
-  {
-    id: 'm2',
-    title: 'Second Meetup',
-    image:
-      'https://blog.lucasgilbert.com.br/wp-content/uploads/2018/03/city-e-town-lucas-gilbert.jpg',
-    address: 'Some address r9, 54321, New York',
-    description: 'This is a second meetup',
-  },
-];
+import MeetupList from '../components/meetups/MeetupList';
 
 const HomePage = (props) => {
   return <MeetupList meetups={props.meetups} />;
 };
 
 export const getStaticProps = async () => {
+  const client = await MongoClient.connect(
+    'mongodb+srv://timm:1OHBNaU7OXPlEZOi@cluster0.9vmy3.mongodb.net/meetups?retryWrites=true&w=majority'
+  );
+
+  const db = client.db();
+
+  const meetupsCollection = db.collection('meetups');
+
+  const meetups = await meetupsCollection.find().toArray();
+
+  client.close();
+
   return {
     props: {
-      meetups: DUMMY_MEETUPS,
+      meetups: meetups.map((meetup) => ({
+        title: meetup.title,
+        address: meetup.address,
+        image: meetup.image,
+        id: meetup._id.toString(),
+      })),
     },
-    revalidate: 1
+    revalidate: 1,
   };
 };
 
